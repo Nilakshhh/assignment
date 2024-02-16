@@ -55,6 +55,10 @@ def profile():
 def employee():
     return render_template('employee.html')
 
+@app.route('/add')
+def add():
+    return render_template('add.html')
+
 @app.route('/api/employees', methods=['POST', 'GET'])
 def employeeOps():
     token = request.cookies.get('token')
@@ -64,10 +68,22 @@ def employeeOps():
     if tokenValidationScore == 0:
         return render_template('404.html')
     
+    employeeOperation = EmployeeOperations()
+
     if request.method == 'GET':
-        employeeOperation = EmployeeOperations()
         employees = employeeOperation.view_all()
         return jsonify(employees)
+
+    if request.method == 'POST':
+        # Get data from the request
+        employee_data = request.json
+        email = employee_data.get('email')
+        password = employee_data.get('password')
+        role = employee_data.get('role')
+        
+        response = employeeOperation.add_user(email, password, role)
+        
+        return jsonify({"message": "Employee data received successfully"})
 
 
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
