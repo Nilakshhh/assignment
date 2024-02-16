@@ -87,10 +87,19 @@ def employeeOps():
 
 
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-def employeeOpsWitId(id):
+def employeeOpsWithId(id):
     token = request.cookies.get('token')
     tokenValidator = TokenValidation(token)
     tokenValidationScore = tokenValidator.get_token_score()
+
+    if tokenValidationScore == 0:
+        return render_template('404.html')
+    
+    employeeOperation = EmployeeOperations(id)
+
+    if request.method == 'GET':
+        employee = employeeOperation.view_emp()
+        return jsonify(employee)
     
 
 if __name__ == '__main__':
