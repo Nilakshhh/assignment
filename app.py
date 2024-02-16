@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, make_response
 from models.employee import Employee
+from models.tokenValidation import TokenValidation
 import jwt
 import datetime
+from config import Config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'encode!it!for!safety'
+secret_key = Config.SECRET_KEY
 
 @app.route('/')
 def enter():
@@ -25,10 +27,13 @@ def login():
     if login_status:
         # Create JWT token
         current_time = datetime.datetime.utcnow()
+        current_time_str = current_time.isoformat()
 
         # Time after 5 minutes
-        expiration_time = current_time + datetime.timedelta(minutes=5)
-        token = jwt.encode({"email": email, "role": role, "current_time": current_time, "expiration_time": expiration_time}, app.config['SECRET_KEY'], algorithm="HS256")
+        expiration_time = current_time + datetime.timedelta(minutes=600)
+        expiration_time_str = expiration_time.isoformat()
+
+        token = jwt.encode({"email": email, "role": role, "current_time": current_time_str, "expiration_time": expiration_time_str}, secret_key, algorithm="HS256")
         response = make_response(redirect(url_for('profile')))
 
         # Set the token as a cookie in the response
@@ -51,22 +56,12 @@ def employeeOps():
 
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def employee(id):
-    """token = request.cookies.get('token')
-    payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-
-    # Get the current time
-    current_time = datetime.datetime.utcnow()
-
-    # Get the expiration time from the payload
-    expiration_time = payload['expiration_time']
-    role = payload['role']
-
-    # Check if the current time is within the timeframe
-    if current_time < expiration_time and role=='employee':
-        print("Token is valid and within the timeframe.")
-    else:
-        print("Token has expired.")"""
-
+    token = request.cookies.get('token')
+    tokenValidator = TokenValidation(token)
+    tokenValidationScore = tokenValidator.get_token_score()
+    print(tokenValidationScore)
+    return("fire")
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
