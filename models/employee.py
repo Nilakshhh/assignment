@@ -1,4 +1,5 @@
 import psycopg2
+
 class Employee:
     def __init__(self, email, password, role, created_at=None):
         self.email = email
@@ -41,6 +42,5 @@ class Employee:
             print("Error while connecting to PostgreSQL:", error)
             return False
 
-    
     def validate(self):
         return True

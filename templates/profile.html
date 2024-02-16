@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<ul>
+    <h2>User Profile</h2>
+    <p>Welcome to your profile page!</p>
+    <p>Token: {{ token }}</p>
+    <p>Role: {{ role }}</p>
+
+    {% if role == 'admin' %}
+    <h3>Admin Options</h3>
+    <ul>
+        <li><a href="#">View all employees</a></li>
+        <li><a href="#">Add employee</a></li>
+    </ul>
+    {% endif %}
+
+    {% if role == 'employee' %}
+    <h3>Employee Options</h3>
+    <ul>
+        <li><a href="#">View all users</a></li>
+        <li><a href="#">Edit Profile</a></li>
+    </ul>
+    {% endif %}
+
+    {% if role == 'manager' %}
+    <h3>Manager Options</h3>
+    <ul>
+    <li><a href="#">View all users</a></li>
+    <li><a href="#">Add employee</a></li>
+    </ul>    
+    {% endif %}
+</body>
+</html>
