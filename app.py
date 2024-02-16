@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, make_response
 from models.employee import Employee
 from models.tokenValidation import TokenValidation
+from models.empOperations import EmployeeOperations
 import jwt
 import datetime
 from config import Config
@@ -45,22 +46,35 @@ def login():
 @app.route('/profile')
 def profile():
     token = request.cookies.get('token')
-    payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+    payload = jwt.decode(token, secret_key, algorithms=["HS256"])
     print(payload)
     role = payload.get('role')
     return render_template('profile.html', token=token, role=role)
 
+@app.route('/employee')
+def employee():
+    return render_template('employee.html')
+
 @app.route('/api/employees', methods=['POST', 'GET'])
 def employeeOps():
-    pass
-
-@app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
-def employee(id):
     token = request.cookies.get('token')
     tokenValidator = TokenValidation(token)
     tokenValidationScore = tokenValidator.get_token_score()
-    print(tokenValidationScore)
-    return("fire")
+    
+    if tokenValidationScore == 0:
+        return render_template('404.html')
+    
+    if request.method == 'GET':
+        employeeOperation = EmployeeOperations()
+        employees = employeeOperation.view_all()
+        return jsonify(employees)
+
+
+@app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+def employeeOpsWitId(id):
+    token = request.cookies.get('token')
+    tokenValidator = TokenValidation(token)
+    tokenValidationScore = tokenValidator.get_token_score()
     
 
 if __name__ == '__main__':
