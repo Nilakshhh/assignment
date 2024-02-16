@@ -10,7 +10,7 @@ app.config['SECRET_KEY'] = 'encode!it!for!safety'
 def enter():
     return render_template('login.html')
 
-@app.route('/login', methods = ["POST"])
+@app.route('/api/auth/login', methods = ["POST"])
 def login():
     email = request.form.get('email')
     password = request.form.get('password')
@@ -45,9 +45,13 @@ def profile():
     role = payload.get('role')
     return render_template('profile.html', token=token, role=role)
 
-@app.route('/view_emp')
-def view_emp():
-    token = request.cookies.get('token')
+@app.route('/api/employees', methods=['POST', 'GET'])
+def employeeOps():
+    pass
+
+@app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+def employee(id):
+    """token = request.cookies.get('token')
     payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
 
     # Get the current time
@@ -61,7 +65,7 @@ def view_emp():
     if current_time < expiration_time and role=='employee':
         print("Token is valid and within the timeframe.")
     else:
-        print("Token has expired.")
+        print("Token has expired.")"""
 
 
 if __name__ == '__main__':
