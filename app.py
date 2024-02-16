@@ -4,7 +4,7 @@ import jwt
 import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = 'encode!it!for!safety'
 
 @app.route('/')
 def enter():
