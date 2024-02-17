@@ -133,3 +133,24 @@ console.error('Error:', error);
 alert("Failed to update employee: " + error.message);
 });
 }
+
+function logout() {
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+            document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = '/';
+        } else {
+            console.error('Failed to logout:', response.statusText);
+            alert('Failed to logout. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again later.');
+    });
+
+}

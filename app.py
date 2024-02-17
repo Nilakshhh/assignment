@@ -22,7 +22,14 @@ def profile():
 
 @app.route('/add')
 def add():
-    return render_template('add.html')
+    token = request.cookies.get('token')
+    tokenValidator = TokenValidation(token)
+    tokenValidationScore = tokenValidator.get_token_score()
+
+    if tokenValidationScore < 2:
+        return render_template('404.html')
+    else:
+        return render_template('add.html')
 
 @app.route('/admin')
 def admin():
@@ -109,13 +116,20 @@ def employeeOpsWithId(id):
         response = employeeOperation.delete_emp()
         return jsonify(response)
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    return redirect('/')
+
 @app.route('/check')
 def check():
     token = request.cookies.get('token')
-    tokenValidator = TokenValidation(token)
-    tokenValidationScore = tokenValidator.get_token_score()
-    print(tokenValidationScore)
-    return("j")
+    if token == None:
+        return("None")
+    else:    
+        print(token)
+        tokenValidator = TokenValidation(token)
+        tokenValidationScore = tokenValidator.get_token_score()
+        return(tokenValidationScore)
 
 
 if __name__ == '__main__':

@@ -6,8 +6,6 @@
     <title>User Profile</title>
     <link rel="stylesheet" href="{{url_for('static', filename='/styles/profile.css') }}">
     <script src="{{ url_for('static', filename='js/employee.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/manager.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </head>
 <ul>
     <h2>User Profile</h2>
@@ -84,5 +82,8 @@
         </div>
     </ul>    
     {% endif %}
+
+    <button onclick="logout()">Logout</button>
+
 </body>
 </html>
