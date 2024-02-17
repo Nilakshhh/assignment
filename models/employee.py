@@ -1,6 +1,7 @@
 import psycopg2
 from config import Config
 import json
+import bcrypt
 
 db_details = Config.DATABASE_CONFIG
 
@@ -33,12 +34,14 @@ class Employee:
             result = self.cur.fetchone()
             self.cur.close()
             self.conn.close()
+            stored_password = result[1].tobytes()
+            password_authentication_result = bcrypt.checkpw(self.password.encode('utf-8'), stored_password)
 
             # Check if user exists and password matches
             if not result:
                 response = {'authenticated': False, 'message': 'Email not present in our database'}
             else:
-                if result[1] != self.password or result[2] != self.role:
+                if not password_authentication_result or result[2] != self.role:
                     response = {'authenticated': False, 'message': 'Incorrect password or role'}
                 else:
                     response = {'authenticated': True, 'message': 'Logged in successfully.'}

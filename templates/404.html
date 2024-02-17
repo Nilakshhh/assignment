@@ -27,7 +27,9 @@
 <body>
     <div class="container">
         <h1>404 - Not Allowed</h1>
-        <p>You are not allowed to access the requested page.</p>
+        {% if message %}
+            <p>{{ message }}</p>
+        {% endif %}
         <a href="/profile">Return to Profile page</a>
     </div>
 </body>

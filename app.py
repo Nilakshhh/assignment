@@ -31,7 +31,7 @@ def add():
     tokenValidationScore = tokenValidator.get_token_score()
 
     if tokenValidationScore < 2:
-        return redirect('/not_allowed')
+        return render_template('404.html', message = "You are not allowed to access this functionality.")
     else:
         return render_template('add.html')
 
@@ -42,13 +42,9 @@ def admin():
     tokenValidationScore = tokenValidator.get_token_score()
 
     if tokenValidationScore < 3:
-        return redirect('/not_allowed')
+        return render_template('404.html', message = "You are not allowed to access this functionality.")
     else:
         return render_template('admin.html')
-
-@app.route('/not_allowed')
-def not_allowed():
-    return render_template('404.html')
 
 @app.route('/api/auth/login', methods = ["POST"])
 def login():
@@ -90,7 +86,7 @@ def employeeOps():
     tokenValidationScore = tokenValidator.get_token_score()
     
     if tokenValidationScore == 0:
-        return redirect('/not_allowed')
+        return render_template('404.html', message = "Token expired, please log-in again")
     
     employeeOperation = EmployeeOperations()
 
@@ -108,7 +104,7 @@ def employeeOps():
         
         return jsonify({"message": "Employee data received successfully"})
     else:
-        return redirect('/not_allowed')
+        return render_template('404.html', message = "You are not allowed to access this functionality.")
 
 
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
@@ -131,13 +127,13 @@ def employeeOpsWithId(id):
         response = employeeOperation.update_emp(data)
         return jsonify(response)
     else:
-        return redirect('/not_allowed')
+        return render_template('404.html', message = "You are not allowed to access this functionality.")
 
     if request.method == 'DELETE' and tokenValidationScore > 2:
         response = employeeOperation.delete_emp()
         return jsonify(response)
     else:
-        return redirect('/not_allowed')
+        return render_template('404.html', message = "You are not allowed to access this functionality.")
 
 @app.route('/logout', methods=['POST'])
 def logout():
