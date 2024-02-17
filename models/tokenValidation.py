@@ -50,7 +50,7 @@ class TokenValidation:
         if result and result[1] == self.role:
             pass
         else:
-            return 0
+            return -1
 
         if self.role == "admin":
             return 3

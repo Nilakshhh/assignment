@@ -30,7 +30,7 @@ class EmployeeOperations:
             port="5432"
         )
         cur = conn.cursor()
-        cur.execute("SELECT email, role, created_at FROM employee WHERE id = %s", (self.search_id,))
+        cur.execute("SELECT id, email, role, created_at FROM employee WHERE id = %s", (self.search_id,))
         employees = cur.fetchall()
         cur.close()
         conn.close()
@@ -69,3 +69,71 @@ class EmployeeOperations:
         except (Exception, psycopg2.Error) as error:
             print("Error while inserting user:", error)
             self.conn.rollback()
+
+    def update_emp(self, data):
+        conn = psycopg2.connect(
+            dbname="emp",
+            user="postgres",
+            password="root",
+            host="localhost",
+            port="5432"
+        )
+        cur = conn.cursor()
+        email = data['email']
+        role = data['role']
+        password = data['password']
+        
+        try:
+            
+            sql = """
+            UPDATE employee 
+            SET email = %s, role = %s, password = %s 
+            WHERE id = %s
+            """
+            # Execute the query
+            cur.execute(sql, (email, role, password, self.search_id))
+            
+            # Commit the transaction
+            conn.commit()
+
+            cur.close()
+            conn.close()
+            
+            print("User added successfully.")
+            return {"success": True, "message": "User updated successfully"}
+        
+        except (Exception, psycopg2.Error) as error:
+            print("Error while inserting user:", error)
+            self.conn.rollback()
+            return {"success": False, "error": str(error)}
+
+    def delete_emp(self):
+        conn = psycopg2.connect(
+            dbname="emp",
+            user="postgres",
+            password="root",
+            host="localhost",
+            port="5432"
+        )
+
+        try:
+            cur = conn.cursor()
+
+            query = "DELETE FROM employee WHERE id = %s;"
+
+            cur.execute(query, (self.search_id,))
+
+            conn.commit()
+
+            cur.close()
+            conn.close()
+
+            return {"success": True, "message": f"Employee with ID {self.search_id} deleted successfully."}
+        except (Exception, psycopg2.DatabaseError) as error:
+            print(f"Error: {error}")
+            conn.rollback()
+
+            if conn is not None:
+                conn.close()
+
+            return {"success": False, "message": f"Failed to delete employee with ID {self.id}."}

@@ -59,6 +59,14 @@ def employee():
 def add():
     return render_template('add.html')
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+@app.route('/not_allowed')
+def not_allowed():
+    return render_template('404.html')
+
 @app.route('/api/employees', methods=['POST', 'GET'])
 def employeeOps():
     token = request.cookies.get('token')
@@ -91,16 +99,39 @@ def employeeOpsWithId(id):
     token = request.cookies.get('token')
     tokenValidator = TokenValidation(token)
     tokenValidationScore = tokenValidator.get_token_score()
+    print(tokenValidationScore)
 
     if tokenValidationScore == 0:
-        return render_template('404.html')
+        return jsonify({"error": "Invalid token"}), 401
     
     employeeOperation = EmployeeOperations(id)
 
     if request.method == 'GET':
         employee = employeeOperation.view_emp()
         return jsonify(employee)
-    
+
+    if request.method == 'PUT':
+        data = request.json
+        response = employeeOperation.update_emp(data)
+        return jsonify(response)
+
+    if request.method == 'DELETE':
+        response = employeeOperation.delete_emp()
+        return jsonify(response)
+
+@app.route('/k')
+def k():
+    token = request.cookies.get('token')
+    payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+    print(payload['expiration_time'])
+    current_time = datetime.datetime.utcnow()
+    current_time_str = current_time.isoformat()
+    print(current_time_str)
+    tokenValidator = TokenValidation(token)
+    tokenValidationScore = tokenValidator.get_token_score()
+    print(tokenValidationScore)
+    return("j")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
