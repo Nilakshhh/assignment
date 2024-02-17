@@ -29,6 +29,7 @@ function showEmployeeTable() {
 
 function hideEmployeeInfoDiv() {
     const employeeInfoDiv = document.getElementById("employeeInfo");
+    document.getElementById("editButtons").style.display = "none";
     employeeInfoDiv.style.display = "none";
 }
 
@@ -55,7 +56,9 @@ function searchEmployee() {
 function displayEmployee(employee) {
     const employeeInfoDiv = document.getElementById('employeeInfo');
     employeeInfoDiv.style.display = "block";
+    document.getElementById("editButtons").style.display = "block";
     document.getElementById("employeeTable").style.display = "none";
+    document.getElementById("editButtons").style.display = "block";
 
     employeeInfoDiv.innerHTML = `
         <h2>Employee Details</h2>
@@ -64,4 +67,69 @@ function displayEmployee(employee) {
         <p>Role: ${employee[0][2]}</p>
         <p>Created at: ${employee[0][3]}</p>
     `;
+}
+
+function hideEditButtons() {
+    document.getElementById('editButtons').style.display = 'none';
+}
+
+function showEditForm() {
+    hideEditButtons();
+    const editEmployeeForm = document.getElementById('editEmployeeForm');
+    editEmployeeForm.innerHTML = `
+        <h2>Edit Employee</h2>
+        <label for="email">Email:</label>
+        <input type="text" id="email">
+        <label for="role">Role:</label>
+        <input type="text" id="role">
+        <label for="password">Password:</label>
+        <input type="text" id="password">
+        <button onclick="submitUpdate()">Save Changes</button>
+    `;
+    editEmployeeForm.style.display = 'block';
+}
+
+function hideEditForm() {
+    document.getElementById('editEmployeeForm').style.display = 'none';
+}
+
+function submitUpdate() {
+const email = document.getElementById('email').value;
+const role = document.getElementById('role').value;
+const password = document.getElementById('password').value;
+const empId = parseInt(document.getElementById('employeeId').value);
+hideEmployeeInfoDiv();
+
+const newData = {
+email: email,
+role: role,
+password: password
+};
+
+fetch(`/api/employees/${empId}`, {
+method: 'PUT',
+headers: {
+    'Content-Type': 'application/json'
+},
+body: JSON.stringify(newData)
+})
+.then(response => {
+if (!response.ok) {
+    throw new Error('Failed to update employee.');
+}
+return response.json();
+})
+.then(data => {
+if (data.success) {
+    alert("Employee updated successfully.");
+    // Optionally update the UI after successful update
+    editEmployeeForm.style.display = 'none';
+} else {
+    alert("Failed to update employee: " + data.error);
+}
+})
+.catch(error => {
+console.error('Error:', error);
+alert("Failed to update employee: " + error.message);
+});
 }

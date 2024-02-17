@@ -6,6 +6,8 @@
     <title>User Profile</title>
     <link rel="stylesheet" href="{{url_for('static', filename='/styles/profile.css') }}">
     <script src="{{ url_for('static', filename='js/employee.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/manager.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </head>
 <ul>
     <h2>User Profile</h2>
@@ -52,7 +54,7 @@
 
 
 
-    
+
     {% if role == 'manager' %}
     <h3>Manager Options</h3>
     <ul>
@@ -76,6 +78,13 @@
           <div id="employeeInfo">
               <!-- Employee information will be displayed here -->
           </div>
+          <div id="editButtons" style="display: none;">
+            <button onclick="showEditForm()">Edit</button>
+        </div>
+    
+        <div id="editEmployeeForm" style="display: none;">
+            <!-- Edit employee form will appear here -->
+        </div>
     </ul>    
     {% endif %}
 </body>
