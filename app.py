@@ -10,15 +10,18 @@ app = Flask(__name__)
 secret_key = Config.SECRET_KEY
 
 @app.route('/')
-def enter():
+def home():
     return render_template('login.html')
 
 @app.route('/profile')
 def profile():
     token = request.cookies.get('token')
+    if token is None:
+        return redirect('/')
+
     payload = jwt.decode(token, secret_key, algorithms=["HS256"])
     role = payload.get('role')
-    return render_template('profile.html', token=token, role=role)
+    return render_template('profile.html', role=role)
 
 @app.route('/add')
 def add():
@@ -27,13 +30,20 @@ def add():
     tokenValidationScore = tokenValidator.get_token_score()
 
     if tokenValidationScore < 2:
-        return render_template('404.html')
+        return redirect('/not_allowed')
     else:
         return render_template('add.html')
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    token = request.cookies.get('token')
+    tokenValidator = TokenValidation(token)
+    tokenValidationScore = tokenValidator.get_token_score()
+
+    if tokenValidationScore < 3:
+        return redirect('/not_allowed')
+    else:
+        return render_template('admin.html')
 
 @app.route('/not_allowed')
 def not_allowed():
@@ -73,7 +83,7 @@ def employeeOps():
     tokenValidationScore = tokenValidator.get_token_score()
     
     if tokenValidationScore == 0:
-        return render_template('404.html')
+        return redirect('/not_allowed')
     
     employeeOperation = EmployeeOperations()
 
@@ -81,7 +91,7 @@ def employeeOps():
         employees = employeeOperation.view_all()
         return jsonify(employees)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and tokenValidationScore > 1:
         employee_data = request.json
         email = employee_data.get('email')
         password = employee_data.get('password')
@@ -90,6 +100,8 @@ def employeeOps():
         response = employeeOperation.add_user(email, password, role)
         
         return jsonify({"message": "Employee data received successfully"})
+    else:
+        return redirect('/not_allowed')
 
 
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
@@ -107,14 +119,18 @@ def employeeOpsWithId(id):
         employee = employeeOperation.view_emp()
         return jsonify(employee)
 
-    if request.method == 'PUT':
+    if request.method == 'PUT' and tokenValidationScore > 1:
         data = request.json
         response = employeeOperation.update_emp(data)
         return jsonify(response)
+    else:
+        return redirect('/not_allowed')
 
-    if request.method == 'DELETE':
+    if request.method == 'DELETE' and tokenValidationScore > 2:
         response = employeeOperation.delete_emp()
         return jsonify(response)
+    else:
+        return redirect('/not_allowed')
 
 @app.route('/logout', methods=['POST'])
 def logout():

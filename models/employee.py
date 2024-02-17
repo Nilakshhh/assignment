@@ -1,4 +1,7 @@
 import psycopg2
+from config import Config
+
+db_details = Config.DATABASE_CONFIG
 
 class Employee:
     def __init__(self, email, password, role, created_at=None):
