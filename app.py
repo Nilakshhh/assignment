@@ -5,6 +5,7 @@ from models.empOperations import EmployeeOperations
 import jwt
 import datetime
 from config import Config
+import json
 
 app = Flask(__name__)
 secret_key = Config.SECRET_KEY
@@ -59,9 +60,10 @@ def login():
         return 'Missing email or password', 400
 
     employee = Employee(email, password, role)
-    login_status = employee.authenticate(email, password, role)
+    login_status = json.loads(employee.authenticate(email, password, role))
+    print(login_status)
 
-    if login_status:
+    if login_status['authenticated']:
         current_time = datetime.datetime.utcnow()
         current_time_str = current_time.isoformat()
 
@@ -75,8 +77,11 @@ def login():
 
         response.set_cookie('token', token)
         return response
+    else:
+        return render_template('login_error.html', message = login_status['message'])
 
-    return jsonify({'message': 'Invalid email or password'}), 401
+
+    return jsonify({'message': 'Invalid login procedure'}), 401
 
 @app.route('/api/employees', methods=['POST', 'GET'])
 def employeeOps():

@@ -1,5 +1,6 @@
 import psycopg2
 from config import Config
+import json
 
 db_details = Config.DATABASE_CONFIG
 
@@ -34,11 +35,16 @@ class Employee:
             self.conn.close()
 
             # Check if user exists and password matches
-            if result and result[1] == self.password and result[2] == self.role:
-                return True
+            if not result:
+                response = {'authenticated': False, 'message': 'Email not present in our database'}
             else:
-                return False
+                if result[1] != self.password or result[2] != self.role:
+                    response = {'authenticated': False, 'message': 'Incorrect password or role'}
+                else:
+                    response = {'authenticated': True, 'message': 'Logged in successfully.'}
 
         except (Exception, psycopg2.Error) as error:
             print("Error while self.connecting to PostgreSQL:", error)
-            return False
+            response = {'authenticated': False, 'message': 'Problem connecting to database'}
+
+        return json.dumps(response)
