@@ -13,6 +13,25 @@ secret_key = Config.SECRET_KEY
 def enter():
     return render_template('login.html')
 
+@app.route('/profile')
+def profile():
+    token = request.cookies.get('token')
+    payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+    role = payload.get('role')
+    return render_template('profile.html', token=token, role=role)
+
+@app.route('/add')
+def add():
+    return render_template('add.html')
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+@app.route('/not_allowed')
+def not_allowed():
+    return render_template('404.html')
+
 @app.route('/api/auth/login', methods = ["POST"])
 def login():
     email = request.form.get('email')
@@ -39,30 +58,6 @@ def login():
         return response
 
     return jsonify({'message': 'Invalid email or password'}), 401
-
-@app.route('/profile')
-def profile():
-    token = request.cookies.get('token')
-    payload = jwt.decode(token, secret_key, algorithms=["HS256"])
-    print(payload)
-    role = payload.get('role')
-    return render_template('profile.html', token=token, role=role)
-
-@app.route('/employee')
-def employee():
-    return render_template('employee.html')
-
-@app.route('/add')
-def add():
-    return render_template('add.html')
-
-@app.route('/admin')
-def admin():
-    return render_template('admin.html')
-
-@app.route('/not_allowed')
-def not_allowed():
-    return render_template('404.html')
 
 @app.route('/api/employees', methods=['POST', 'GET'])
 def employeeOps():
@@ -95,10 +90,9 @@ def employeeOpsWithId(id):
     token = request.cookies.get('token')
     tokenValidator = TokenValidation(token)
     tokenValidationScore = tokenValidator.get_token_score()
-    print(tokenValidationScore)
 
     if tokenValidationScore == 0:
-        return jsonify({"error": "Invalid token"}), 401
+        return jsonify({"error": "Invalid token, Please Login again"}), 401
     
     employeeOperation = EmployeeOperations(id)
 
@@ -114,6 +108,14 @@ def employeeOpsWithId(id):
     if request.method == 'DELETE':
         response = employeeOperation.delete_emp()
         return jsonify(response)
+
+@app.route('/check')
+def check():
+    token = request.cookies.get('token')
+    tokenValidator = TokenValidation(token)
+    tokenValidationScore = tokenValidator.get_token_score()
+    print(tokenValidationScore)
+    return("j")
 
 
 if __name__ == '__main__':

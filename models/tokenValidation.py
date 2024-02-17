@@ -4,6 +4,7 @@ import psycopg2
 from config import Config
 
 secret_key = Config.SECRET_KEY
+db_details = Config.DATABASE_CONFIG
 
 class TokenValidation:
     def __init__(self, token):
@@ -26,25 +27,25 @@ class TokenValidation:
         self.role = payload['role']
         self.expiration_time = payload['expiration_time']
 
-        conn = psycopg2.connect(
-                dbname="emp",
-                user="postgres",
-                password="root",
-                host="localhost",
-                port="5432"
+        self.conn = psycopg2.connect(
+                dbname=db_details['dbname'],
+                user=db_details['user'],
+                password=db_details['password'],
+                host=db_details['host'],
+                port=db_details['port']
         )
 
         # Create a cursor object
-        cur = conn.cursor()
+        self.cur = self.conn.cursor()
 
         # Execute a SQL query to fetch user credentials
-        cur.execute("SELECT email, role FROM employee WHERE email = %s", (self.email,))
+        self.cur.execute("SELECT email, role FROM employee WHERE email = %s", (self.email,))
         
         # Fetch the result
-        result = cur.fetchone()
+        result = self.cur.fetchone()
         
-        cur.close()
-        conn.close()
+        self.cur.close()
+        self.conn.close()
         
         # Check if user exists and password matches
         if result and result[1] == self.role:

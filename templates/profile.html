@@ -17,9 +17,18 @@
     {% if role == 'admin' %}
     <h3>Admin Options</h3>
     <ul>
-        <li><a href="#">View all employees</a></li>
-        <li><a href="#">Add employee</a></li>
+        <li><button onclick="fetchEmployeeData()">View all employees</button></li>
+        <li><a href="/add">Add an employee</a></li>
+        <li><a href="/admin">Update or remove an employee</a></li>
     </ul>
+    <table id="employeeTable" style="display:none;">
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Created At</th>
+        </tr>
+      </table>
     {% endif %}
 
     {% if role == 'employee' %}
@@ -45,16 +54,6 @@
       </div>
     {% endif %}
     
-
-
-
-
-
-
-
-
-
-
     {% if role == 'manager' %}
     <h3>Manager Options</h3>
     <ul>
@@ -76,14 +75,12 @@
           </table>
       
           <div id="employeeInfo">
-              <!-- Employee information will be displayed here -->
           </div>
           <div id="editButtons" style="display: none;">
             <button onclick="showEditForm()">Edit</button>
         </div>
     
         <div id="editEmployeeForm" style="display: none;">
-            <!-- Edit employee form will appear here -->
         </div>
     </ul>    
     {% endif %}

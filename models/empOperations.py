@@ -1,48 +1,51 @@
 import psycopg2
 from datetime import date
 from psycopg2 import sql
+from config import Config
+
+db_details = Config.DATABASE_CONFIG
 
 class EmployeeOperations:
     def __init__(self, search_id = 0):
         self.search_id = search_id
 
     def view_all(self):
-        conn = psycopg2.connect(
-            dbname="emp",
-            user="postgres",
-            password="root",
-            host="localhost",
-            port="5432"
+        self.conn = psycopg2.connect(
+            dbname=db_details['dbname'],
+            user=db_details['user'],
+            password=db_details['password'],
+            host=db_details['host'],
+            port=db_details['port']
         )
-        cur = conn.cursor()
-        cur.execute("SELECT id, email, role, created_at FROM employee")
-        employees = cur.fetchall()
-        cur.close()
-        conn.close()
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT id, email, role, created_at FROM employee")
+        employees = self.cur.fetchall()
+        self.cur.close()
+        self.conn.close()
         return employees
     
     def view_emp(self):
-        conn = psycopg2.connect(
-            dbname="emp",
-            user="postgres",
-            password="root",
-            host="localhost",
-            port="5432"
+        self.conn = psycopg2.connect(
+            dbname=db_details['dbname'],
+            user=db_details['user'],
+            password=db_details['password'],
+            host=db_details['host'],
+            port=db_details['port']
         )
-        cur = conn.cursor()
-        cur.execute("SELECT id, email, role, created_at FROM employee WHERE id = %s", (self.search_id,))
-        employees = cur.fetchall()
-        cur.close()
-        conn.close()
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT id, email, role, created_at FROM employee WHERE id = %s", (self.search_id,))
+        employees = self.cur.fetchall()
+        self.cur.close()
+        self.conn.close()
         return employees
 
     def add_user(self, email, password, role):
         self.conn = psycopg2.connect(
-            dbname="emp",
-            user="postgres",
-            password="root",
-            host="localhost",
-            port="5432"
+            dbname=db_details['dbname'],
+            user=db_details['user'],
+            password=db_details['password'],
+            host=db_details['host'],
+            port=db_details['port']
         )
         self.cur = self.conn.cursor()
         try:
@@ -71,14 +74,14 @@ class EmployeeOperations:
             self.conn.rollback()
 
     def update_emp(self, data):
-        conn = psycopg2.connect(
-            dbname="emp",
-            user="postgres",
-            password="root",
-            host="localhost",
-            port="5432"
+        self.conn = psycopg2.connect(
+            dbname=db_details['dbname'],
+            user=db_details['user'],
+            password=db_details['password'],
+            host=db_details['host'],
+            port=db_details['port']
         )
-        cur = conn.cursor()
+        self.cur = self.conn.cursor()
         email = data['email']
         role = data['role']
         password = data['password']
@@ -91,13 +94,13 @@ class EmployeeOperations:
             WHERE id = %s
             """
             # Execute the query
-            cur.execute(sql, (email, role, password, self.search_id))
+            self.cur.execute(sql, (email, role, password, self.search_id))
             
             # Commit the transaction
-            conn.commit()
+            self.conn.commit()
 
-            cur.close()
-            conn.close()
+            self.cur.close()
+            self.conn.close()
             
             print("User added successfully.")
             return {"success": True, "message": "User updated successfully"}
@@ -108,32 +111,32 @@ class EmployeeOperations:
             return {"success": False, "error": str(error)}
 
     def delete_emp(self):
-        conn = psycopg2.connect(
-            dbname="emp",
-            user="postgres",
-            password="root",
-            host="localhost",
-            port="5432"
+        self.conn = psycopg2.connect(
+            dbname=db_details['dbname'],
+            user=db_details['user'],
+            password=db_details['password'],
+            host=db_details['host'],
+            port=db_details['port']
         )
 
         try:
-            cur = conn.cursor()
+            self.cur = self.conn.cursor()
 
             query = "DELETE FROM employee WHERE id = %s;"
 
-            cur.execute(query, (self.search_id,))
+            self.cur.execute(query, (self.search_id,))
 
-            conn.commit()
+            self.conn.commit()
 
-            cur.close()
-            conn.close()
+            self.cur.close()
+            self.conn.close()
 
             return {"success": True, "message": f"Employee with ID {self.search_id} deleted successfully."}
         except (Exception, psycopg2.DatabaseError) as error:
             print(f"Error: {error}")
-            conn.rollback()
+            self.conn.rollback()
 
-            if conn is not None:
-                conn.close()
+            if self.conn is not None:
+                self.conn.close()
 
             return {"success": False, "message": f"Failed to delete employee with ID {self.id}."}

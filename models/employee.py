@@ -12,25 +12,25 @@ class Employee:
         if not self.validate():
             return False
         try:
-            # Connect to your PostgreSQL database
-            conn = psycopg2.connect(
-                dbname="emp",
-                user="postgres",
-                password="root",
-                host="localhost",
-                port="5432"
+            # connect to your PostgreSQL database
+            self.conn = psycopg2.connect(
+                dbname=db_details['dbname'],
+                user=db_details['user'],
+                password=db_details['password'],
+                host=db_details['host'],
+                port=db_details['port']
             )
 
             # Create a cursor object
-            cur = conn.cursor()
+            self.cur = self.conn.cursor()
 
             # Execute a SQL query to fetch user credentials
-            cur.execute("SELECT email, password, role FROM employee WHERE email = %s", (self.email,))
+            self.cur.execute("SELECT email, password, role FROM employee WHERE email = %s", (self.email,))
 
             # Fetch the result
-            result = cur.fetchone()
-            cur.close()
-            conn.close()
+            result = self.cur.fetchone()
+            self.cur.close()
+            self.conn.close()
 
             # Check if user exists and password matches
             if result and result[1] == self.password and result[2] == self.role:
@@ -39,7 +39,7 @@ class Employee:
                 return False
 
         except (Exception, psycopg2.Error) as error:
-            print("Error while connecting to PostgreSQL:", error)
+            print("Error while self.connecting to PostgreSQL:", error)
             return False
 
     def validate(self):
