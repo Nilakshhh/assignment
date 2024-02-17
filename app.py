@@ -26,18 +26,15 @@ def login():
     login_status = employee.authenticate(email, password, role)
 
     if login_status:
-        # Create JWT token
         current_time = datetime.datetime.utcnow()
         current_time_str = current_time.isoformat()
 
-        # Time after 5 minutes
         expiration_time = current_time + datetime.timedelta(minutes=600)
         expiration_time_str = expiration_time.isoformat()
 
         token = jwt.encode({"email": email, "role": role, "current_time": current_time_str, "expiration_time": expiration_time_str}, secret_key, algorithm="HS256")
         response = make_response(redirect(url_for('profile')))
 
-        # Set the token as a cookie in the response
         response.set_cookie('token', token)
         return response
 
@@ -83,7 +80,6 @@ def employeeOps():
         return jsonify(employees)
 
     if request.method == 'POST':
-        # Get data from the request
         employee_data = request.json
         email = employee_data.get('email')
         password = employee_data.get('password')
@@ -118,19 +114,6 @@ def employeeOpsWithId(id):
     if request.method == 'DELETE':
         response = employeeOperation.delete_emp()
         return jsonify(response)
-
-@app.route('/k')
-def k():
-    token = request.cookies.get('token')
-    payload = jwt.decode(token, secret_key, algorithms=["HS256"])
-    print(payload['expiration_time'])
-    current_time = datetime.datetime.utcnow()
-    current_time_str = current_time.isoformat()
-    print(current_time_str)
-    tokenValidator = TokenValidation(token)
-    tokenValidationScore = tokenValidator.get_token_score()
-    print(tokenValidationScore)
-    return("j")
 
 
 if __name__ == '__main__':

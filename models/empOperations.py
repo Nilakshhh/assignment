@@ -37,17 +37,17 @@ class EmployeeOperations:
         return employees
 
     def add_user(self, email, password, role):
-        conn = psycopg2.connect(
+        self.conn = psycopg2.connect(
             dbname="emp",
             user="postgres",
             password="root",
             host="localhost",
             port="5432"
         )
-        cur = conn.cursor()
+        self.cur = self.conn.cursor()
         try:
             
-            cur.execute("SELECT COUNT(*) FROM employee WHERE email = %s", (email,))
+            self.cur.execute("SELECT COUNT(*) FROM employee WHERE email = %s", (email,))
             count = self.cur.fetchone()[0]
             if count > 0:
                 print("User with this email already exists.")
@@ -56,13 +56,13 @@ class EmployeeOperations:
             query = sql.SQL("INSERT INTO employee (email, password, role, created_at) VALUES (%s, %s, %s, %s)")
             
             # Execute the query
-            cur.execute(query, (email, password, role, date.today()))
+            self.cur.execute(query, (email, password, role, date.today()))
             
             # Commit the transaction
-            conn.commit()
+            self.conn.commit()
 
-            cur.close()
-            conn.close()
+            self.cur.close()
+            self.conn.close()
             
             print("User added successfully.")
         
