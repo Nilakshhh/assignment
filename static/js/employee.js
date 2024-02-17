@@ -29,7 +29,6 @@ function showEmployeeTable() {
 
 function hideEmployeeInfoDiv() {
     const employeeInfoDiv = document.getElementById("employeeInfo");
-    document.getElementById("editButtons").style.display = "none";
     employeeInfoDiv.style.display = "none";
 }
 
@@ -56,9 +55,7 @@ function searchEmployee() {
 function displayEmployee(employee) {
     const employeeInfoDiv = document.getElementById('employeeInfo');
     employeeInfoDiv.style.display = "block";
-    document.getElementById("editButtons").style.display = "block";
     document.getElementById("employeeTable").style.display = "none";
-    document.getElementById("editButtons").style.display = "block";
 
     employeeInfoDiv.innerHTML = `
         <h2>Employee Details</h2>

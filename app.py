@@ -29,11 +29,14 @@ def add():
     token = request.cookies.get('token')
     tokenValidator = TokenValidation(token)
     tokenValidationScore = tokenValidator.get_token_score()
+    
+    payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+    role = payload.get('role')
 
     if tokenValidationScore < 2:
         return render_template('404.html', message = "You are not allowed to access this functionality.")
     else:
-        return render_template('add.html')
+        return render_template('add.html', role = role)
 
 @app.route('/admin')
 def admin():
