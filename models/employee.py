@@ -12,8 +12,6 @@ class Employee:
     
     
     def authenticate(self, email, password, role):
-        if not self.validate():
-            return False
         try:
             # connect to your PostgreSQL database
             self.conn = psycopg2.connect(
@@ -44,6 +42,3 @@ class Employee:
         except (Exception, psycopg2.Error) as error:
             print("Error while self.connecting to PostgreSQL:", error)
             return False
-
-    def validate(self):
-        return True

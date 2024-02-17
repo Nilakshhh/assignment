@@ -15,6 +15,8 @@ class TokenValidation:
         return self.token_score
 
     def validate(self, token):
+        if self.token is None:
+            return 0
         try:
             payload = jwt.decode(token, secret_key, algorithms=["HS256"])
         except jwt.ExpiredSignatureError:

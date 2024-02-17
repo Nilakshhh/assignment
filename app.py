@@ -68,7 +68,9 @@ def login():
         expiration_time = current_time + datetime.timedelta(minutes=600)
         expiration_time_str = expiration_time.isoformat()
 
-        token = jwt.encode({"email": email, "role": role, "current_time": current_time_str, "expiration_time": expiration_time_str}, secret_key, algorithm="HS256")
+        payload = {"email": email, "role": role, "login_time": current_time_str, "expiration_time": expiration_time_str}
+
+        token = jwt.encode(payload, secret_key, algorithm="HS256")
         response = make_response(redirect(url_for('profile')))
 
         response.set_cookie('token', token)
@@ -145,7 +147,8 @@ def check():
         print(token)
         tokenValidator = TokenValidation(token)
         tokenValidationScore = tokenValidator.get_token_score()
-        return(tokenValidationScore)
+        print(tokenValidationScore)
+        return("tokenValidationScore")
 
 
 if __name__ == '__main__':
