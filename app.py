@@ -97,11 +97,16 @@ def employeeOps():
         password = employee_data.get('password')
         role = employee_data.get('role')
         
-        response = employeeOperation.add_user(email, password, role)
-        
-        return jsonify({"message": "Employee data received successfully"})
+        response, status_code = employeeOperation.add_user(email, password, role)
+    
+        if status_code == 200:  # Successful addition of user
+            return jsonify({"message": response})
+        elif status_code == 409:  # Conflict, user with email already exists
+            return jsonify({"error": response}), 409
+        else:
+            return jsonify({"error": response}), 500  # Internal Server Error
     else:
-        return render_template('404.html', message = "You are not allowed to access this functionality.")
+        return render_template('404.html', message="You are not allowed to access this functionality.")
 
 
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])

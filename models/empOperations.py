@@ -45,11 +45,10 @@ class EmployeeOperations:
             self.cur.execute("SELECT COUNT(*) FROM employee WHERE email = %s", (email,))
             count = self.cur.fetchone()[0]
             if count > 0:
-                print("User with this email already exists.")
-                return
-            
+                self.cur.close()
+                return "User with this email already exists ", 409  # 409: Conflict
+
             query = sql.SQL("INSERT INTO employee (email, password, role, created_at) VALUES (%s, %s, %s, %s)")
-            
             self.cur.execute(query, (email, password, role, date.today()))
             
             # Commit the transaction
@@ -57,11 +56,12 @@ class EmployeeOperations:
 
             self.cur.close()
             
-            print("User added successfully.")
+            return "User added successfully.", 200
         
         except (Exception, psycopg2.Error) as error:
             print("Error while inserting user:", error)
             self.conn.rollback()
+            return "Error while inserting user: " + str(error), 500  # 500: Internal Server Error
 
     def update_emp(self, data):
         self.cur = self.conn.cursor()

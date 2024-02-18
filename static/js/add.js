@@ -26,7 +26,10 @@ function adduser(event){
             setTimeout(function() {
                 window.location.href = '/profile';
             }, 2000); 
-        } else {
+        } else if(response.status == 409){
+            alert("Email already exists");
+        } else{
+            console.log(response.status);
             alert("Failed to add employee. Please try again.");
         }
     })
