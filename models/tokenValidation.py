@@ -51,17 +51,13 @@ class TokenValidation:
         
         # Check if user exists and password matches
         if result and result[1] == self.role:
-            pass
-        else:
-            return -1
-
-        if self.role == "admin":
-            return 3
-        else:
-            if self.expiration_time > current_time_str:
-                if self.role == "manager":
-                    return 2
-                elif self.role == "employee":
-                    return 1
+            if self.role == "admin":
+                return 3
+            elif self.role == "manager" and self.expiration_time > current_time_str:
+                return 2
+            elif self.role == "employee" and self.expiration_time > current_time_str:
+                return 1
             else:
-                return 0
+                return 0  # Role expired
+        else:
+            return -1  # Authentication failed

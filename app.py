@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, make_response
 from models.employee import Employee
 from models.tokenValidation import TokenValidation
+from models.tokenGenerator import TokenGenerator
 from models.empOperations import EmployeeOperations
 import jwt
 import datetime
@@ -62,15 +63,9 @@ def login():
     login_status = json.loads(employee.authenticate())
 
     if login_status['authenticated']:
-        current_time = datetime.datetime.utcnow()
-        current_time_str = current_time.isoformat()
+        token_generator = TokenGenerator(employee)
+        token = token_generator.generate_token()
 
-        expiration_time = current_time + datetime.timedelta(minutes=600)
-        expiration_time_str = expiration_time.isoformat()
-
-        payload = {"email": email, "role": role, "login_time": current_time_str, "expiration_time": expiration_time_str}
-
-        token = jwt.encode(payload, secret_key, algorithm="HS256")
         response = make_response(redirect(url_for('profile')))
 
         response.set_cookie('token', token)
