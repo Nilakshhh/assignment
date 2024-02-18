@@ -2,9 +2,10 @@
 // added into the database by an user, 
 // it makes a POST request to /api/employee route
 
-document.getElementById("employeeForm").addEventListener("submit", function(event) {
-    event.preventDefault(); 
 
+
+function adduser(event){
+    event.preventDefault();
     const formData = new FormData(event.target);
 
     const jsonObject = {};
@@ -33,4 +34,4 @@ document.getElementById("employeeForm").addEventListener("submit", function(even
         console.error('Error:', error);
         alert("An error occurred. Please try again later.");
     });
-});
+}

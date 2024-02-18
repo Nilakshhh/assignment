@@ -28,13 +28,13 @@ def profile():
 @app.route('/add')
 def add():
     token = request.cookies.get('token')
-    tokenValidator = TokenValidation(token)
-    tokenValidationScore = tokenValidator.get_token_score()
+    token_validator = TokenValidation(token)
+    token_validation_score = token_validator.get_token_score()
     
     payload = jwt.decode(token, secret_key, algorithms=["HS256"])
     role = payload.get('role')
 
-    if tokenValidationScore < 2:
+    if token_validation_score < 2:
         return render_template('404.html', message = "You are not allowed to access this functionality.")
     else:
         return render_template('add.html', role = role)
@@ -42,10 +42,10 @@ def add():
 @app.route('/admin')
 def admin():
     token = request.cookies.get('token')
-    tokenValidator = TokenValidation(token)
-    tokenValidationScore = tokenValidator.get_token_score()
+    token_validator = TokenValidation(token)
+    token_validation_score = token_validator.get_token_score()
 
-    if tokenValidationScore < 3:
+    if token_validation_score < 3:
         return render_template('404.html', message = "You are not allowed to access this functionality.")
     else:
         return render_template('admin.html')
@@ -79,10 +79,10 @@ def login():
 @app.route('/api/employees', methods=['POST', 'GET'])
 def employeeOps():
     token = request.cookies.get('token')
-    tokenValidator = TokenValidation(token)
-    tokenValidationScore = tokenValidator.get_token_score()
+    token_validator = TokenValidation(token)
+    token_validation_score = token_validator.get_token_score()
     
-    if tokenValidationScore == 0:
+    if token_validation_score == 0:
         return render_template('404.html', message = "Token expired, please log-in again")
     
     employeeOperation = EmployeeOperations()
@@ -91,7 +91,7 @@ def employeeOps():
         employees = employeeOperation.view_all()
         return jsonify(employees)
 
-    if request.method == 'POST' and tokenValidationScore > 1:
+    if request.method == 'POST' and token_validation_score > 1:
         employee_data = request.json
         email = employee_data.get('email')
         password = employee_data.get('password')
@@ -107,10 +107,10 @@ def employeeOps():
 @app.route('/api/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def employeeOpsWithId(id):
     token = request.cookies.get('token')
-    tokenValidator = TokenValidation(token)
-    tokenValidationScore = tokenValidator.get_token_score()
+    token_validator = TokenValidation(token)
+    token_validation_score = token_validator.get_token_score()
 
-    if tokenValidationScore == 0:
+    if token_validation_score == 0:
         return jsonify({"error": "Invalid token, Please Login again"}), 401
     
     employeeOperation = EmployeeOperations(id)
@@ -121,14 +121,14 @@ def employeeOpsWithId(id):
             return jsonify({'error': 'Employee not found'}), 404
         return jsonify(employee)
 
-    if request.method == 'PUT' and tokenValidationScore > 1:
+    if request.method == 'PUT' and token_validation_score > 1:
         data = request.json
         response = employeeOperation.update_emp(data)
         return jsonify(response)
     else:
         return render_template('404.html', message = "You are not allowed to access this functionality.")
 
-    if request.method == 'DELETE' and tokenValidationScore > 2:
+    if request.method == 'DELETE' and token_validation_score > 2:
         response = employeeOperation.delete_emp()
         return jsonify(response)
     else:
