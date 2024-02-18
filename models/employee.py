@@ -4,6 +4,13 @@ import json
 
 db_details = Config.DATABASE_CONFIG
 
+#----------------------------------------------#
+    # Class Employee is used to create an employee object and 
+    # is responsible for authentication of employee, during login
+    # it verifies that mentioned email is present, mentioned role 
+    # is correct and also verifies the password
+#----------------------------------------------#
+
 class Employee:
     def __init__(self, email, password, role, created_at=None):
         self.email = email

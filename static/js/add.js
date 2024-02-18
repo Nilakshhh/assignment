@@ -1,3 +1,7 @@
+// This function will be called when an employee is 
+// added into the database by an user, 
+// it makes a POST request to /api/employee route
+
 document.getElementById("employeeForm").addEventListener("submit", function(event) {
     event.preventDefault(); 
 

@@ -4,6 +4,12 @@ from config import Config
 
 secret_key = Config.SECRET_KEY
 
+#----------------------------------------------#
+    # Class TokenGenerator is used to generate jwt token
+    # using employee object as a reference, this token 
+    # is stored in cookies and later used for 
+    # authentication while requests are made to the server
+#----------------------------------------------#
 class TokenGenerator:
     def __init__(self, employee):
         self.employee = employee

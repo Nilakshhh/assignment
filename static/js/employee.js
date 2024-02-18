@@ -1,3 +1,6 @@
+// This file will handle api calls made by employee or manager
+// for various operations
+
 function fetchEmployeeData() {
     fetch('/api/employees')
         .then(response => response.json())
@@ -91,44 +94,44 @@ function hideEditForm() {
 }
 
 function submitUpdate() {
-const email = document.getElementById('email').value;
-const role = document.getElementById('role').value;
-const password = document.getElementById('password').value;
-const empId = parseInt(document.getElementById('employeeId').value);
-hideEmployeeInfoDiv();
+    const email = document.getElementById('email').value;
+    const role = document.getElementById('role').value;
+    const password = document.getElementById('password').value;
+    const empId = parseInt(document.getElementById('employeeId').value);
+    hideEmployeeInfoDiv();
 
-const newData = {
-email: email,
-role: role,
-password: password
-};
+    const newData = {
+    email: email,
+    role: role,
+    password: password
+    };
 
-fetch(`/api/employees/${empId}`, {
-method: 'PUT',
-headers: {
-    'Content-Type': 'application/json'
-},
-body: JSON.stringify(newData)
-})
-.then(response => {
-if (!response.ok) {
-    throw new Error('Failed to update employee.');
-}
-return response.json();
-})
-.then(data => {
-if (data.success) {
-    alert("Employee updated successfully.");
-    // Optionally update the UI after successful update
-    editEmployeeForm.style.display = 'none';
-} else {
-    alert("Failed to update employee: " + data.error);
-}
-})
-.catch(error => {
-console.error('Error:', error);
-alert("Failed to update employee: " + error.message);
-});
+    fetch(`/api/employees/${empId}`, {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(newData)
+    })
+    .then(response => {
+    if (!response.ok) {
+        throw new Error('Failed to update employee.');
+    }
+    return response.json();
+    })
+    .then(data => {
+    if (data.success) {
+        alert("Employee updated successfully.");
+        // Optionally update the UI after successful update
+        editEmployeeForm.style.display = 'none';
+    } else {
+        alert("Failed to update employee: " + data.error);
+    }
+    })
+    .catch(error => {
+    console.error('Error:', error);
+    alert("Failed to update employee: " + error.message);
+    });
 }
 
 function logout() {

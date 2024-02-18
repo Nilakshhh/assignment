@@ -6,6 +6,14 @@ from config import Config
 secret_key = Config.SECRET_KEY
 db_details = Config.DATABASE_CONFIG
 
+#----------------------------------------------#
+    # Class TokenValidation is used to assign a token 
+    # validation score to based on expiration time, 
+    # role and email prescence in the database, 
+    # 3 is assigned to manager, 2 for manager, 
+    # 1 for employee, 0 or -1 for expired token
+#----------------------------------------------#
+
 class TokenValidation:
     def __init__(self, token):
         self.token = token

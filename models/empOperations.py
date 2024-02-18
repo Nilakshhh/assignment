@@ -5,6 +5,13 @@ from config import Config
 
 db_details = Config.DATABASE_CONFIG
 
+#----------------------------------------------#
+    # Class EmployeeOperations is responsible for
+    # various operations related request handling, 
+    # viewing all employees, searching for a single employee
+    # adding, updating or deleting a user 
+#----------------------------------------------#
+
 class EmployeeOperations:
     def __init__(self, search_id = 0):
         self.search_id = search_id
