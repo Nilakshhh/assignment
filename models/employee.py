@@ -12,7 +12,7 @@ db_details = Config.DATABASE_CONFIG
 #----------------------------------------------#
 
 class Employee:
-    def __init__(self, email, password, role, created_at=None):
+    def __init__(self, email, password, role=None, created_at=None):
         self.email = email
         self.password = password
         self.role = role
@@ -41,14 +41,10 @@ class Employee:
             else:
                 # Extract stored password and role
                 stored_password = result[1]
-                stored_role = result[2]
-
-                # Check if provided role matches stored role
-                if stored_role != self.role:
-                    response = {'authenticated': False, 'message': 'Incorrect role'}
+                self.role = result[2]
 
                 # Check if provided password matches stored password
-                elif stored_password == self.password:
+                if stored_password == self.password:
                     response = {'authenticated': True, 'message': 'Logged in successfully'}
                 else:
                     response = {'authenticated': False, 'message': 'Incorrect password'}
