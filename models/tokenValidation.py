@@ -9,16 +9,16 @@ db_details = Config.DATABASE_CONFIG
 class TokenValidation:
     def __init__(self, token):
         self.token = token
-        self.token_score = self.validate(self.token)
+        self.token_score = self.validate()
 
     def get_token_score(self):
         return self.token_score
 
-    def validate(self, token):
+    def validate(self):
         if self.token is None:
             return 0
         try:
-            payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+            payload = jwt.decode(self.token, secret_key, algorithms=["HS256"])
         except jwt.ExpiredSignatureError:
             return 0
 

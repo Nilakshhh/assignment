@@ -59,8 +59,7 @@ def login():
         return 'Missing email or password', 400
 
     employee = Employee(email, password, role)
-    login_status = json.loads(employee.authenticate(email, password, role))
-    print(login_status)
+    login_status = json.loads(employee.authenticate())
 
     if login_status['authenticated']:
         current_time = datetime.datetime.utcnow()
@@ -123,6 +122,8 @@ def employeeOpsWithId(id):
 
     if request.method == 'GET':
         employee = employeeOperation.view_emp()
+        if not employee:
+            return jsonify({'error': 'Employee not found'}), 404
         return jsonify(employee)
 
     if request.method == 'PUT' and tokenValidationScore > 1:
@@ -141,19 +142,6 @@ def employeeOpsWithId(id):
 @app.route('/logout', methods=['POST'])
 def logout():
     return redirect('/')
-
-@app.route('/check')
-def check():
-    token = request.cookies.get('token')
-    if token == None:
-        return("None")
-    else:    
-        print(token)
-        tokenValidator = TokenValidation(token)
-        tokenValidationScore = tokenValidator.get_token_score()
-        print(tokenValidationScore)
-        return("tokenValidationScore")
-
 
 if __name__ == '__main__':
     app.run(debug=True)
