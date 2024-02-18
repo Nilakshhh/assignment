@@ -2,7 +2,6 @@ import psycopg2
 from datetime import date
 from psycopg2 import sql
 from config import Config
-import bcrypt
 
 db_details = Config.DATABASE_CONFIG
 
@@ -57,11 +56,8 @@ class EmployeeOperations:
                 return
             
             query = sql.SQL("INSERT INTO employee (email, password, role, created_at) VALUES (%s, %s, %s, %s)")
-            salt = bcrypt.gensalt()
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
             
-            # Execute the query
-            self.cur.execute(query, (email, hashed_password, role, date.today()))
+            self.cur.execute(query, (email, password, role, date.today()))
             
             # Commit the transaction
             self.conn.commit()

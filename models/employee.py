@@ -1,7 +1,6 @@
 import psycopg2
 from config import Config
-import json
-import bcrypt
+import json 
 
 db_details = Config.DATABASE_CONFIG
 
@@ -26,25 +25,29 @@ class Employee:
 
             # Create a cursor object
             self.cur = self.conn.cursor()
+            self.cur.execute("SELECT email, password, role FROM employee WHERE email = %s", (email,))
 
-            # Execute a SQL query to fetch user credentials
-            self.cur.execute("SELECT email, password, role FROM employee WHERE email = %s", (self.email,))
-
-            # Fetch the result
             result = self.cur.fetchone()
+
+            if not result:
+                response = {'authenticated': False, 'message': 'Email not found in the database'}
+            else:
+                # Extract stored password and role
+                stored_password = result[1]
+                stored_role = result[2]
+
+                # Check if provided role matches stored role
+                if role != stored_role:
+                    response = {'authenticated': False, 'message': 'Incorrect role'}
+
+                elif stored_password == password:
+                    response = {'authenticated': True, 'message': 'Logged in successfully'}
+                else:
+                    response = {'authenticated': False, 'message': 'Incorrect password'}
+
+            # Close cursor and connection
             self.cur.close()
             self.conn.close()
-            stored_password = result[1].tobytes()
-            password_authentication_result = bcrypt.checkpw(self.password.encode('utf-8'), stored_password)
-
-            # Check if user exists and password matches
-            if not result:
-                response = {'authenticated': False, 'message': 'Email not present in our database'}
-            else:
-                if not password_authentication_result or result[2] != self.role:
-                    response = {'authenticated': False, 'message': 'Incorrect password or role'}
-                else:
-                    response = {'authenticated': True, 'message': 'Logged in successfully.'}
 
         except (Exception, psycopg2.Error) as error:
             print("Error while self.connecting to PostgreSQL:", error)
