@@ -1,8 +1,4 @@
-// This function will be called when an employee is 
-// added into the database by an user, 
-// it makes a POST request to /api/employee route
-
-// emailValidator.js
+// emailValidator.js, this class is used for validation of email
 class EmailValidator {
     constructor() {
       this.emailRegex = /^[a-zA-Z0-9._-]+@company\.com$/;
@@ -13,10 +9,15 @@ class EmailValidator {
     }
   }
 
+// This function will be called when an employee is 
+// added into the database by an user, 
+// it makes a POST request to /api/employee route
+
 function adduser(event){
     event.preventDefault();
     const formData = new FormData(event.target);
 
+    // A json object is created for form data
     const jsonObject = {};
     formData.forEach(function(value, key){
         jsonObject[key] = value;
@@ -24,6 +25,8 @@ function adduser(event){
 
     const validator = new EmailValidator();
     if(validator.isValidEmail(jsonObject['email'])){
+        
+        // If email is valid, a post request is sent, else user is alerted
         fetch('/api/employees', {
             method: 'POST',
             headers: {

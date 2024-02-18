@@ -51,7 +51,6 @@ class TokenValidation:
         # Execute a SQL query to fetch user credentials
         self.cur.execute("SELECT email, role FROM employee WHERE email = %s", (self.email,))
         
-        # Fetch the result
         result = self.cur.fetchone()
         
         self.cur.close()

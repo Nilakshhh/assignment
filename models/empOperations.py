@@ -24,39 +24,51 @@ class EmployeeOperations:
         )
 
     def view_all(self):
+        # Connect to database and retrieve all employee data
         self.cur = self.conn.cursor()
+
         self.cur.execute("SELECT id, email, role, created_at FROM employee")
         employees = self.cur.fetchall()
         self.cur.close()
+
         return employees
     
     def view_emp(self):
+        # Search for a employee with their id
         self.cur = self.conn.cursor()
+
         self.cur.execute("SELECT id, email, role, created_at FROM employee WHERE id = %s", (self.search_id,))
         employees = self.cur.fetchall()
+
+        # If no employee are found, return None
         if not employees:
             return None
+
         self.cur.close()
+        
         return employees
 
     def add_user(self, email, password, role):
+        # Connect to database
         self.cur = self.conn.cursor()
+
         try:
             self.cur.execute("SELECT COUNT(*) FROM employee WHERE email = %s", (email,))
             count = self.cur.fetchone()[0]
+            
+            # Return 409 if email is already present in database
             if count > 0:
                 self.cur.close()
-                return "User with this email already exists ", 409  # 409: Conflict
+                return "User with this email already exists ", 409
 
             query = sql.SQL("INSERT INTO employee (email, password, role, created_at) VALUES (%s, %s, %s, %s)")
             self.cur.execute(query, (email, password, role, date.today()))
             
-            # Commit the transaction
             self.conn.commit()
-
             self.cur.close()
             
-            return "User added successfully.", 200
+            # Return 200 Success if done
+            return "User added successfully.", 200 
         
         except (Exception, psycopg2.Error) as error:
             print("Error while inserting user:", error)
@@ -64,6 +76,7 @@ class EmployeeOperations:
             return "Error while inserting user: " + str(error), 500  # 500: Internal Server Error
 
     def update_emp(self, data):
+
         self.cur = self.conn.cursor()
         email = data['email']
         role = data['role']
@@ -76,15 +89,13 @@ class EmployeeOperations:
             SET email = %s, role = %s, password = %s 
             WHERE id = %s
             """
-            # Execute the query
+
             self.cur.execute(sql, (email, role, password, self.search_id))
             
-            # Commit the transaction
             self.conn.commit()
-
             self.cur.close()
             
-            print("User added successfully.")
+            # Return success message if user updated
             return {"success": True, "message": "User updated successfully"}
         
         except (Exception, psycopg2.Error) as error:

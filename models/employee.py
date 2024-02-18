@@ -21,7 +21,7 @@ class Employee:
     
     def authenticate(self):
         try:
-            # connect to your PostgreSQL database
+            # connect to PostgreSQL database
             self.conn = psycopg2.connect(
                 dbname=db_details['dbname'],
                 user=db_details['user'],
@@ -30,12 +30,12 @@ class Employee:
                 port=db_details['port']
             )
 
-            # Create a cursor object
             self.cur = self.conn.cursor()
             self.cur.execute("SELECT email, password, role FROM employee WHERE email = %s", (self.email,))
 
             result = self.cur.fetchone()
-
+            
+            # If provided email is not present in the database
             if not result:
                 response = {'authenticated': False, 'message': 'Email not found in the database'}
             else:
@@ -47,6 +47,7 @@ class Employee:
                 if stored_role != self.role:
                     response = {'authenticated': False, 'message': 'Incorrect role'}
 
+                # Check if provided password matches stored password
                 elif stored_password == self.password:
                     response = {'authenticated': True, 'message': 'Logged in successfully'}
                 else:
