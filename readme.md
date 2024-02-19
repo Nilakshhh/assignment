@@ -50,5 +50,6 @@ python app.py
 
 ## Demo
 
-Insert gif or link to demo
+Please access a demo to the software at this link:-
+https://www.awesomescreenshot.com/video/25057293?key=74fcf31fd1538a0abf136978314d8afc
 
